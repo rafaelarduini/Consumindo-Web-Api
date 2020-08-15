@@ -1,0 +1,15 @@
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\obj\Debug\Consumindo_WebApi.csprojAssemblyReference.cache
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\obj\Debug\Consumindo_WebApi.Form1.resources
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\obj\Debug\Consumindo_WebApi.Properties.Resources.resources
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\obj\Debug\Consumindo_WebApi.csproj.GenerateResource.cache
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\obj\Debug\Consumindo_WebApi.csproj.CoreCompileInputs.cache
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\bin\Debug\Consumindo_WebApi.exe.config
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\bin\Debug\Consumindo_WebApi.exe
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\bin\Debug\Consumindo_WebApi.pdb
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\bin\Debug\Newtonsoft.Json.dll
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\bin\Debug\System.Net.Http.Formatting.dll
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\bin\Debug\Newtonsoft.Json.xml
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\bin\Debug\System.Net.Http.Formatting.xml
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\obj\Debug\Consumindo_WebApi.csproj.CopyComplete
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\obj\Debug\Consumindo_WebApi.exe
+C:\Users\T-Gamer\source\repos\Teste-Entrevista-UpperTools\Consumindo_WebApi\Consumindo_WebApi\obj\Debug\Consumindo_WebApi.pdb
