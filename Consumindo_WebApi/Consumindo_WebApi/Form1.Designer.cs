@@ -185,7 +185,7 @@
             this.cboId.Name = "cboId";
             this.cboId.Size = new System.Drawing.Size(45, 21);
             this.cboId.TabIndex = 10;
-            //this.cboId.SelectedIndexChanged += new System.EventHandler(this.cboId_SelectedIndexChanged);
+            this.cboId.SelectedIndexChanged += new System.EventHandler(this.cboId_SelectedIndexChanged);
             // 
             // lblPanel
             // 

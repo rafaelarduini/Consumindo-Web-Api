@@ -119,8 +119,9 @@ namespace Consumindo_WebApi
                 if (response.IsSuccessStatusCode)
                 {
                     var DadosJsonString = await response.Content.ReadAsStringAsync();
-                    bsDados.DataSource = JsonConvert.DeserializeObject<Dados>(DadosJsonString);
-                    dgvDados.DataSource = bsDados;
+                    Dados dados = JsonConvert.DeserializeObject<Dados>(DadosJsonString);
+                    txtDado1.Text = dados.Nome;
+                    txtDado2.Text = dados.Categoria;
                 }
                 else
                 {
