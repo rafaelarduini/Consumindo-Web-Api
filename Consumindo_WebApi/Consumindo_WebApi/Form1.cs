@@ -9,6 +9,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.Sql;
+using System.Data.SqlClient;
 
 namespace Consumindo_WebApi
 {
@@ -24,9 +26,9 @@ namespace Consumindo_WebApi
 
         private void btnConsumir_Click(object sender, EventArgs e)
         {
-            GetAllDados();
-            btnAlterarDados.Enabled = true;
-            btnSalvarDados.Enabled = true;
+            GetAllProdutos();
+            btnAlterarProdutos.Enabled = true;
+            btnSalvarProdutos.Enabled = true;
             btnConsumir.Enabled = false;
         }
 
@@ -37,9 +39,10 @@ namespace Consumindo_WebApi
             btnIncluir.Enabled = false;
             btnAtualizar.Enabled = true;
             btnExcluir.Enabled = true;
-            txtDado1.Text = "";
-            txtDado2.Text = "";
-            txtDado3.Text = "";
+            txtNome.Text = "";
+            txtCategoria.Text = "";
+            txtPreco.Text = "";
+
 
         }
 
@@ -48,14 +51,54 @@ namespace Consumindo_WebApi
             codigoProduto = Convert.ToInt32(cboId.SelectedItem);
             if (codigoProduto != -1)
             {
-                GetDadosPorId(codigoProduto);
+                GetProdutoPorId(codigoProduto);
             }
         }
 
 
         private void btnSalvarDados_Click(object sender, EventArgs e)
         {
+            SalvarBancoDados();
+        }
 
+        //================================= Método para salvar no Banco de Dados ------------------------------------------------------
+        private void SalvarBancoDados()
+        {
+            SqlConnection conn = new SqlConnection(@"Data Source=.\sqlexpress;Initial Catalog=Northwind;Integrated Security=True");
+            string sql = "insert into Produtos values (@Id, @Nome, @Categoria, @Preco)";
+            SqlCommand c = new SqlCommand(sql, conn);
+            conn.Open();
+            try
+            {
+                foreach (DataGridViewRow row in dgvDados.Rows)
+                {
+                    c.Parameters.Clear();
+
+                    c.Parameters.AddWithValue("@Id", Convert.ToInt32(row.Cells["Id"].Value));
+                    c.Parameters.AddWithValue("@Nome", Convert.ToString(row.Cells["Nome"].Value));
+                    c.Parameters.AddWithValue("@Categoria", Convert.ToString(row.Cells["Categoria"].Value));
+                    c.Parameters.AddWithValue("@Preco", Convert.ToDecimal(row.Cells["Preco"].Value));
+
+                    c.ExecuteNonQuery();
+
+                }
+
+
+                conn.Close();
+
+                MessageBox.Show("Produtos foram salvos no Banco de dados");
+
+
+
+            }            
+            catch(SqlException ex)
+            {
+                MessageBox.Show("Ocorreu o erro: " + ex);
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
 
         private void btnNovo_Click(object sender, EventArgs e)
@@ -69,12 +112,12 @@ namespace Consumindo_WebApi
 
         private void btnIncluir_Click(object sender, EventArgs e)
         {
-            AddDados();
+            AddProdutos();
             panel.Visible = false;
         }
         private void btnAtualizar_Click(object sender, EventArgs e)
         {
-            AtualizarDados(codigoProduto);
+            AtualizarProdutos(codigoProduto);
             panel.Visible = false;
         }
 
@@ -82,13 +125,14 @@ namespace Consumindo_WebApi
         {
             if (codigoProduto != -1)
             {
-                DeleteDados(codigoProduto);
+                DeleteProdutos(codigoProduto);
             }
             panel.Visible = false;
         }
 
         //=================================métodos para acessar a Web API ------------------------------------------------------
-        private async void GetAllDados()
+
+        private async void GetAllProdutos()
         {
             URI = txtURI.Text;
             using (var client = new HttpClient())
@@ -98,17 +142,26 @@ namespace Consumindo_WebApi
                     if (response.IsSuccessStatusCode)
                     {
                         var ProdutoJsonString = await response.Content.ReadAsStringAsync();
-                        dgvDados.DataSource = JsonConvert.DeserializeObject<Dados[]>(ProdutoJsonString).ToList();
+                        var dados = JsonConvert.DeserializeObject<Produtos[]>(ProdutoJsonString).ToList();
+                        dgvDados.DataSource = dados;
+                        cboId.Items.Clear();
+                        var listaId = 0;
+                        foreach(Produtos i in dados)
+                        {
+                            listaId = i.Id;
+                            cboId.Items.Add(listaId);
+                        }
                     }
                     else
                     {
                         MessageBox.Show("Não foi possível obter os dados : " + response.StatusCode);
                     }
+
                 }
             }
         }
 
-        private async void GetDadosPorId(int codDados)
+        private async void GetProdutoPorId(int codDados)
         {
             using (var client = new HttpClient())
             {
@@ -119,9 +172,10 @@ namespace Consumindo_WebApi
                 if (response.IsSuccessStatusCode)
                 {
                     var DadosJsonString = await response.Content.ReadAsStringAsync();
-                    Dados dados = JsonConvert.DeserializeObject<Dados>(DadosJsonString);
-                    txtDado1.Text = dados.Nome;
-                    txtDado2.Text = dados.Categoria;
+                    Produtos dados = JsonConvert.DeserializeObject<Produtos>(DadosJsonString);
+                    txtNome.Text = dados.Nome;
+                    txtCategoria.Text = dados.Categoria;
+                    txtPreco.Text = dados.Preco.ToString();
                 }
                 else
                 {
@@ -130,12 +184,12 @@ namespace Consumindo_WebApi
             }
         }
 
-        private async void AddDados()
+        private async void AddProdutos()
         {
             URI = txtURI.Text;
-            Dados dados = new Dados();
-            dados.Nome = txtDado1.Text;
-            dados.Categoria = txtDado2.Text;
+            Produtos dados = new Produtos();
+            dados.Nome = txtNome.Text;
+            dados.Categoria = txtCategoria.Text;
 
             using (var client = new HttpClient())
             {
@@ -143,16 +197,17 @@ namespace Consumindo_WebApi
                 var content = new StringContent(serializedProduto, Encoding.UTF8, "application/json");
                 var result = await client.PostAsync(URI, content);
             }
-            GetAllDados();
+            GetAllProdutos();
         }
 
-        private async void AtualizarDados(int codProduto)
+        private async void AtualizarProdutos(int codProduto)
         {
             URI = txtURI.Text;
-            Dados dados = new Dados();
+            Produtos dados = new Produtos();
             dados.Id = codProduto;
-            dados.Nome = txtDado1.Text;
-            dados.Categoria = txtDado2.Text;
+            dados.Nome = txtNome.Text;
+            dados.Categoria = txtCategoria.Text;
+            dados.Preco = Convert.ToDecimal(txtCategoria.Text);
 
             using (var client = new HttpClient())
             {
@@ -166,10 +221,10 @@ namespace Consumindo_WebApi
                     MessageBox.Show("Falha ao atualizar o produto : " + responseMessage.StatusCode);
                 }
             }
-            GetAllDados();
+            GetAllProdutos();
         }
 
-        private async void DeleteDados(int codProduto)
+        private async void DeleteProdutos(int codProduto)
         {
             URI = txtURI.Text;
             int ProdutoID = codProduto;
@@ -186,7 +241,7 @@ namespace Consumindo_WebApi
                     MessageBox.Show("Falha ao excluir o produto  : " + responseMessage.StatusCode);
                 }
             }
-            GetAllDados();
+            GetAllProdutos();
         }
     }
 }

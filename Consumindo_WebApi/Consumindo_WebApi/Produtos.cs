@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Consumindo_WebApi
 {
-    class Dados
+    class Produtos
     {
         public int Id { get; set; }
         public string Nome { get; set; }
