@@ -141,6 +141,8 @@
             this.panel.Size = new System.Drawing.Size(408, 238);
             this.panel.TabIndex = 12;
             this.panel.Visible = false;
+            this.panel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel_MouseDown);
+            this.panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel_MouseMove);
             // 
             // btnCancela
             // 
@@ -217,6 +219,7 @@
             this.txtPreco.Name = "txtPreco";
             this.txtPreco.Size = new System.Drawing.Size(308, 20);
             this.txtPreco.TabIndex = 7;
+            this.txtPreco.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtPreco_KeyPress);
             // 
             // label4
             // 

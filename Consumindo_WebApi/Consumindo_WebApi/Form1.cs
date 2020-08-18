@@ -1,16 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.Sql;
-using System.Data.SqlClient;
 
 namespace Consumindo_WebApi
 {
@@ -29,7 +24,6 @@ namespace Consumindo_WebApi
             GetAllProdutos();
             btnAlterarProdutos.Enabled = true;
             btnSalvarProdutos.Enabled = true;
-            btnConsumir.Enabled = false;
         }
 
         private void btnAlterarDados_Click(object sender, EventArgs e)
@@ -40,9 +34,13 @@ namespace Consumindo_WebApi
             btnAtualizar.Enabled = false;
             btnExcluir.Enabled = false;
             btnNovo.Enabled = true;
+            txtNome.Enabled = false;
+            txtCategoria.Enabled = false;
+            txtPreco.Enabled = false;
             txtNome.Text = "";
             txtCategoria.Text = "";
             txtPreco.Text = "";
+
         }
 
         private void btnCancela_Click(object sender, EventArgs e)
@@ -60,6 +58,10 @@ namespace Consumindo_WebApi
             }
             btnAtualizar.Enabled = true;
             btnExcluir.Enabled = true;
+            txtNome.Enabled = true;
+            txtCategoria.Enabled = true;
+            txtPreco.Enabled = true;
+
         }
 
 
@@ -72,6 +74,10 @@ namespace Consumindo_WebApi
 
         private void btnNovo_Click(object sender, EventArgs e)
         {
+            cboId.Text = "";
+            txtNome.Text = "";
+            txtCategoria.Text = "";
+            txtPreco.Text = "";
             cboId.Enabled = false;
             btnIncluir.Enabled = true;
             btnAtualizar.Enabled = false;
@@ -100,6 +106,38 @@ namespace Consumindo_WebApi
             panel.Visible = false;
         }
 
+        // txtPreco aceita apenas Números e Decimal
+
+        private void txtPreco_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar) && e.KeyChar != ',')
+                e.Handled = true;
+        }
+
+
+        // Permite movimentação do Panel
+
+        Point PanelMouseDownLocation;
+
+        private void panel_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left) PanelMouseDownLocation = e.Location;
+        }
+
+        private void panel_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+
+            {
+
+                panel.Left += e.X - PanelMouseDownLocation.X;
+
+                panel.Top += e.Y - PanelMouseDownLocation.Y;
+
+            }
+        }
+
+
         //================================= Métodos para acessar a Web API ------------------------------------------------------
 
         private async void GetAllProdutos()
@@ -113,8 +151,13 @@ namespace Consumindo_WebApi
                     {
                         var ProdutoJsonString = await response.Content.ReadAsStringAsync();
                         var dados = JsonConvert.DeserializeObject<Produtos[]>(ProdutoJsonString).ToList();
+
+                        //Preenche DataGridView
                         dgvDados.DataSource = dados;
+
+                        //Preenche combo box do panel
                         cboId.Items.Clear();
+                        cboId.Text = "";
                         var listaId = 0;
                         foreach(Produtos i in dados)
                         {
