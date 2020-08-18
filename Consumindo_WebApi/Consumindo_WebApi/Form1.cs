@@ -37,14 +37,19 @@ namespace Consumindo_WebApi
             panel.Visible = true;
             cboId.Enabled = true;
             btnIncluir.Enabled = false;
-            btnAtualizar.Enabled = true;
-            btnExcluir.Enabled = true;
+            btnAtualizar.Enabled = false;
+            btnExcluir.Enabled = false;
+            btnNovo.Enabled = true;
             txtNome.Text = "";
             txtCategoria.Text = "";
             txtPreco.Text = "";
-
-
         }
+
+        private void btnCancela_Click(object sender, EventArgs e)
+        {
+            panel.Visible = false;
+        }
+
 
         private void cboId_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -53,6 +58,8 @@ namespace Consumindo_WebApi
             {
                 GetProdutoPorId(codigoProduto);
             }
+            btnAtualizar.Enabled = true;
+            btnExcluir.Enabled = true;
         }
 
 
@@ -61,45 +68,7 @@ namespace Consumindo_WebApi
             SalvarBancoDados();
         }
 
-        //================================= Método para salvar no Banco de Dados ------------------------------------------------------
-        private void SalvarBancoDados()
-        {
-            SqlConnection conn = new SqlConnection(@"Data Source=.\sqlexpress;Initial Catalog=Northwind;Integrated Security=True");
-            string sql = "insert into Produtos values (@Id, @Nome, @Categoria, @Preco)";
-            SqlCommand c = new SqlCommand(sql, conn);
-            conn.Open();
-            try
-            {
-                foreach (DataGridViewRow row in dgvDados.Rows)
-                {
-                    c.Parameters.Clear();
-
-                    c.Parameters.AddWithValue("@Id", Convert.ToInt32(row.Cells["Id"].Value));
-                    c.Parameters.AddWithValue("@Nome", Convert.ToString(row.Cells["Nome"].Value));
-                    c.Parameters.AddWithValue("@Categoria", Convert.ToString(row.Cells["Categoria"].Value));
-                    c.Parameters.AddWithValue("@Preco", Convert.ToDecimal(row.Cells["Preco"].Value));
-
-                    c.ExecuteNonQuery();
-
-                }
-
-
-                conn.Close();
-
-                MessageBox.Show("Produtos foram salvos no Banco de dados");
-
-
-
-            }            
-            catch(SqlException ex)
-            {
-                MessageBox.Show("Ocorreu o erro: " + ex);
-            }
-            finally
-            {
-                conn.Close();
-            }
-        }
+        
 
         private void btnNovo_Click(object sender, EventArgs e)
         {
@@ -107,6 +76,7 @@ namespace Consumindo_WebApi
             btnIncluir.Enabled = true;
             btnAtualizar.Enabled = false;
             btnExcluir.Enabled = false;
+            btnNovo.Enabled = false;
 
         }
 
@@ -130,7 +100,7 @@ namespace Consumindo_WebApi
             panel.Visible = false;
         }
 
-        //=================================métodos para acessar a Web API ------------------------------------------------------
+        //================================= Métodos para acessar a Web API ------------------------------------------------------
 
         private async void GetAllProdutos()
         {
@@ -161,12 +131,12 @@ namespace Consumindo_WebApi
             }
         }
 
-        private async void GetProdutoPorId(int codDados)
+        private async void GetProdutoPorId(int codProdutos)
         {
             using (var client = new HttpClient())
             {
                 BindingSource bsDados = new BindingSource();
-                URI = txtURI.Text + "/" + codDados.ToString();
+                URI = txtURI.Text + "/" + codProdutos.ToString();
 
                 HttpResponseMessage response = await client.GetAsync(URI);
                 if (response.IsSuccessStatusCode)
@@ -175,7 +145,7 @@ namespace Consumindo_WebApi
                     Produtos dados = JsonConvert.DeserializeObject<Produtos>(DadosJsonString);
                     txtNome.Text = dados.Nome;
                     txtCategoria.Text = dados.Categoria;
-                    txtPreco.Text = dados.Preco.ToString();
+                    txtPreco.Text = dados.Preco.ToString("N2");
                 }
                 else
                 {
@@ -190,6 +160,7 @@ namespace Consumindo_WebApi
             Produtos dados = new Produtos();
             dados.Nome = txtNome.Text;
             dados.Categoria = txtCategoria.Text;
+            dados.Preco = Convert.ToDecimal(txtPreco.Text);
 
             using (var client = new HttpClient())
             {
@@ -203,15 +174,15 @@ namespace Consumindo_WebApi
         private async void AtualizarProdutos(int codProduto)
         {
             URI = txtURI.Text;
-            Produtos dados = new Produtos();
-            dados.Id = codProduto;
-            dados.Nome = txtNome.Text;
-            dados.Categoria = txtCategoria.Text;
-            dados.Preco = Convert.ToDecimal(txtCategoria.Text);
+            Produtos produtos = new Produtos();
+            produtos.Id = codProduto;
+            produtos.Nome = txtNome.Text;
+            produtos.Categoria = txtCategoria.Text;
+            produtos.Preco = Convert.ToDecimal(txtPreco.Text);
 
             using (var client = new HttpClient())
             {
-                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(URI + "/" + dados.Id, dados);
+                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(URI + "/" + produtos.Id, produtos);
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Produto atualizado");
@@ -242,6 +213,43 @@ namespace Consumindo_WebApi
                 }
             }
             GetAllProdutos();
+        }
+
+        //================================= Método para salvar no Banco de Dados ------------------------------------------------------
+        private void SalvarBancoDados()
+        {
+            SqlConnection conn = new SqlConnection(@"Data Source=.\sqlexpress;Initial Catalog=Northwind;Integrated Security=True");
+            string sql = "insert into Produtos values (@Id, @Nome, @Categoria, @Preco)";
+            SqlCommand c = new SqlCommand(sql, conn);
+            conn.Open();
+            try
+            {
+                foreach (DataGridViewRow row in dgvDados.Rows)
+                {
+                    c.Parameters.Clear();
+
+                    c.Parameters.AddWithValue("@Id", Convert.ToInt32(row.Cells["Id"].Value));
+                    c.Parameters.AddWithValue("@Nome", Convert.ToString(row.Cells["Nome"].Value));
+                    c.Parameters.AddWithValue("@Categoria", Convert.ToString(row.Cells["Categoria"].Value));
+                    c.Parameters.AddWithValue("@Preco", Convert.ToDecimal(row.Cells["Preco"].Value));
+
+                    c.ExecuteNonQuery();
+
+                }
+
+                conn.Close();
+
+                MessageBox.Show("Produtos foram salvos no Banco de dados");
+
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Ocorreu o erro: " + ex);
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 }

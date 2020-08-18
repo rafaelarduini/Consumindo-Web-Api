@@ -36,6 +36,7 @@
             this.btnDeletarProduto = new System.Windows.Forms.Button();
             this.btnAlterarProdutos = new System.Windows.Forms.Button();
             this.panel = new System.Windows.Forms.Panel();
+            this.btnCancela = new System.Windows.Forms.Button();
             this.btnNovo = new System.Windows.Forms.Button();
             this.btnIncluir = new System.Windows.Forms.Button();
             this.btnExcluir = new System.Windows.Forms.Button();
@@ -121,6 +122,7 @@
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.btnCancela);
             this.panel.Controls.Add(this.btnNovo);
             this.panel.Controls.Add(this.btnIncluir);
             this.panel.Controls.Add(this.btnExcluir);
@@ -136,13 +138,23 @@
             this.panel.Controls.Add(this.label2);
             this.panel.Location = new System.Drawing.Point(56, 77);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(403, 238);
+            this.panel.Size = new System.Drawing.Size(408, 238);
             this.panel.TabIndex = 12;
             this.panel.Visible = false;
             // 
+            // btnCancela
+            // 
+            this.btnCancela.Location = new System.Drawing.Point(329, 212);
+            this.btnCancela.Name = "btnCancela";
+            this.btnCancela.Size = new System.Drawing.Size(75, 23);
+            this.btnCancela.TabIndex = 14;
+            this.btnCancela.Text = "Cancela";
+            this.btnCancela.UseVisualStyleBackColor = true;
+            this.btnCancela.Click += new System.EventHandler(this.btnCancela_Click);
+            // 
             // btnNovo
             // 
-            this.btnNovo.Location = new System.Drawing.Point(43, 199);
+            this.btnNovo.Location = new System.Drawing.Point(5, 212);
             this.btnNovo.Name = "btnNovo";
             this.btnNovo.Size = new System.Drawing.Size(75, 23);
             this.btnNovo.TabIndex = 13;
@@ -153,7 +165,7 @@
             // btnIncluir
             // 
             this.btnIncluir.Enabled = false;
-            this.btnIncluir.Location = new System.Drawing.Point(124, 199);
+            this.btnIncluir.Location = new System.Drawing.Point(86, 212);
             this.btnIncluir.Name = "btnIncluir";
             this.btnIncluir.Size = new System.Drawing.Size(75, 23);
             this.btnIncluir.TabIndex = 12;
@@ -163,7 +175,7 @@
             // 
             // btnExcluir
             // 
-            this.btnExcluir.Location = new System.Drawing.Point(286, 199);
+            this.btnExcluir.Location = new System.Drawing.Point(248, 212);
             this.btnExcluir.Name = "btnExcluir";
             this.btnExcluir.Size = new System.Drawing.Size(75, 23);
             this.btnExcluir.TabIndex = 11;
@@ -191,7 +203,7 @@
             // 
             // btnAtualizar
             // 
-            this.btnAtualizar.Location = new System.Drawing.Point(205, 199);
+            this.btnAtualizar.Location = new System.Drawing.Point(167, 212);
             this.btnAtualizar.Name = "btnAtualizar";
             this.btnAtualizar.Size = new System.Drawing.Size(75, 23);
             this.btnAtualizar.TabIndex = 8;
@@ -302,6 +314,7 @@
         private System.Windows.Forms.Button btnAtualizar;
         private System.Windows.Forms.Button btnNovo;
         private System.Windows.Forms.ComboBox cboId;
+        private System.Windows.Forms.Button btnCancela;
     }
 }
 
