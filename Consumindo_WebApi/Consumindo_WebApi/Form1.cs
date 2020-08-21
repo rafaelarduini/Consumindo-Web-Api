@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
@@ -37,9 +39,9 @@ namespace Consumindo_WebApi
             txtNome.Enabled = false;
             txtCategoria.Enabled = false;
             txtPreco.Enabled = false;
-            txtNome.Text = "";
-            txtCategoria.Text = "";
-            txtPreco.Text = "";
+            txtNome.Text = string.Empty;
+            txtCategoria.Text = string.Empty;
+            txtPreco.Text = string.Empty;
 
         }
 
@@ -70,14 +72,17 @@ namespace Consumindo_WebApi
             SalvarBancoDados();
         }
 
-        
+
 
         private void btnNovo_Click(object sender, EventArgs e)
         {
-            cboId.Text = "";
-            txtNome.Text = "";
-            txtCategoria.Text = "";
-            txtPreco.Text = "";
+            cboId.Text = string.Empty;
+            txtNome.Text = string.Empty;
+            txtPreco.Text = string.Empty;
+            txtCategoria.Text = string.Empty;
+            txtPreco.Enabled = true;
+            txtNome.Enabled = true;
+            txtCategoria.Enabled = true;
             cboId.Enabled = false;
             btnIncluir.Enabled = true;
             btnAtualizar.Enabled = false;
@@ -88,8 +93,11 @@ namespace Consumindo_WebApi
 
         private void btnIncluir_Click(object sender, EventArgs e)
         {
-            AddProdutos();
-            panel.Visible = false;
+            if (txtPreco.Text != string.Empty)
+            {
+                AddProdutos();
+                panel.Visible = false;
+            }
         }
         private void btnAtualizar_Click(object sender, EventArgs e)
         {
@@ -157,9 +165,9 @@ namespace Consumindo_WebApi
 
                         //Preenche combo box do panel
                         cboId.Items.Clear();
-                        cboId.Text = "";
+                        cboId.Text = string.Empty;
                         var listaId = 0;
-                        foreach(Produtos i in dados)
+                        foreach (Produtos i in dados)
                         {
                             listaId = i.Id;
                             cboId.Items.Add(listaId);
@@ -259,39 +267,56 @@ namespace Consumindo_WebApi
         }
 
         //================================= Método para salvar no Banco de Dados ------------------------------------------------------
-        private void SalvarBancoDados()
+        private async void SalvarBancoDados()
         {
-            SqlConnection conn = new SqlConnection(@"Data Source=.\sqlexpress;Initial Catalog=Northwind;Integrated Security=True");
-            string sql = "insert into Produtos values (@Id, @Nome, @Categoria, @Preco)";
-            SqlCommand c = new SqlCommand(sql, conn);
-            conn.Open();
-            try
+            URI = txtURI.Text;
+            using (var client = new HttpClient())
             {
-                foreach (DataGridViewRow row in dgvDados.Rows)
+                using (var response = await client.GetAsync(URI))
                 {
-                    c.Parameters.Clear();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var ProdutoJsonString = await response.Content.ReadAsStringAsync();
+                        var dados = JsonConvert.DeserializeObject<Produtos[]>(ProdutoJsonString).ToList();
 
-                    c.Parameters.AddWithValue("@Id", Convert.ToInt32(row.Cells["Id"].Value));
-                    c.Parameters.AddWithValue("@Nome", Convert.ToString(row.Cells["Nome"].Value));
-                    c.Parameters.AddWithValue("@Categoria", Convert.ToString(row.Cells["Categoria"].Value));
-                    c.Parameters.AddWithValue("@Preco", Convert.ToDecimal(row.Cells["Preco"].Value));
+                        SqlConnection conn = new SqlConnection(@"Data Source=.\sqlexpress;Initial Catalog=Northwind;Integrated Security=True");
+                        string sql = "insert into Produtos values (@Id, @Nome, @Categoria, @Preco)";
+                        SqlCommand c = new SqlCommand(sql, conn);
+                        conn.Open();
+                        try
+                        {
+                            foreach (Produtos row in dados)
+                            {
+                                c.Parameters.Clear();
 
-                    c.ExecuteNonQuery();
+                                c.Parameters.AddWithValue("@Id", Convert.ToInt32(row.Id));
+                                c.Parameters.AddWithValue("@Nome", Convert.ToString(row.Nome));
+                                c.Parameters.AddWithValue("@Categoria", Convert.ToString(row.Categoria));
+                                c.Parameters.AddWithValue("@Preco", Convert.ToDecimal(row.Preco));
 
+                                c.ExecuteNonQuery();
+
+                            }
+
+                            conn.Close();
+
+                            MessageBox.Show("Produtos foram salvos no Banco de dados");
+
+                        }
+                        catch (SqlException ex)
+                        {
+                            MessageBox.Show("Ocorreu o erro: " + ex);
+                        }
+                        finally
+                        {
+                            conn.Close();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Não foi possível obter os dados : " + response.StatusCode);
+                    }
                 }
-
-                conn.Close();
-
-                MessageBox.Show("Produtos foram salvos no Banco de dados");
-
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show("Ocorreu o erro: " + ex);
-            }
-            finally
-            {
-                conn.Close();
             }
         }
     }
